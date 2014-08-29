@@ -1,0 +1,58 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Title:</strong>
+  <%= @suggestion.title %>
+</p>
+
+<p>
+  <strong>Author:</strong>
+  <%= @suggestion.user.email %>
+</p>
+
+<p>
+  <strong>Description:</strong>
+  <%= @suggestion.description %>
+</p>
+
+<p>
+  <strong>Image:</strong>
+  <%= image_tag(@suggestion.image_url) if @suggestion.image.present? %>
+</p>
+
+<p>
+  <strong>Average Rating</strong>
+  <div id="star"></div>
+</p>
+
+<% unless @suggestion.user == current_user %>
+  <p>
+    <strong>Rate this suggestion</strong>
+    <div id="user_star"></div>
+  </p>
+<% end %>
+
+<% if @suggestion.user == current_user %>
+  <%= link_to 'Edit', edit_suggestion_path(@suggestion) %> |
+<% end %>
+<%= link_to 'Back', suggestions_path %>
+
+<script>
+  $('#star').raty({
+    readOnly: true,
+    score: <%= @suggestion.average_rating %>,
+    path: '/assets'
+  });
+
+  $('#user_star').raty({
+    score: <%= @rating.score %>,
+    path: '/assets',
+    click: function(score, e) {
+      $.ajax({
+        url: '/ratings/' + <%= @rating.id %>,
+        type: 'PATCH',
+        data: { score: score }
+      }).done(function (data){});
+    }
+  });
+</script>
